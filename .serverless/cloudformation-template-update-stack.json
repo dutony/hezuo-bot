@@ -1,0 +1,1020 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "TestLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/hezuo-dev-test"
+      }
+    },
+    "ListDashmembersLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/hezuo-dev-list-members"
+      }
+    },
+    "AddDashactivityLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/hezuo-dev-add-activity"
+      }
+    },
+    "ParserLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/hezuo-dev-parser"
+      }
+    },
+    "ActionsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/hezuo-dev-actions"
+      }
+    },
+    "EventsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/hezuo-dev-events"
+      }
+    },
+    "InstallLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/hezuo-dev-install"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "dev",
+                  "hezuo",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "TestLogGroup",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "ListDashmembersLogGroup",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "AddDashactivityLogGroup",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "ParserLogGroup",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "ActionsLogGroup",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "EventsLogGroup",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "InstallLogGroup",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        ":",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "TestLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          "*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        ":",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "ListDashmembersLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          "*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        ":",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "AddDashactivityLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          "*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        ":",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "ParserLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          "*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        ":",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "ActionsLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          "*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        ":",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "EventsLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          "*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [
+                        ":",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "InstallLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          "*"
+                        ]
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem"
+                  ],
+                  "Resource": [
+                    "arn:aws:dynamodb:*:*:table/hezuo-dev-slack-bot"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:invokeFunction"
+                  ],
+                  "Resource": [
+                    "arn:aws:lambda:*:*:function:hezuo-dev-actions",
+                    "arn:aws:lambda:*:*:function:hezuo-dev-parser",
+                    "arn:aws:lambda:*:*:function:hezuo-dev-add-activity",
+                    "arn:aws:lambda:*:*:function:hezuo-dev-test",
+                    "arn:aws:lambda:*:*:function:hezuo-dev-list*"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "hezuo",
+              "dev",
+              "ap-southeast-2",
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "TestLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/hezuo/dev/1492044997907-2017-04-13T00:56:37.907Z/hezuo.zip"
+        },
+        "FunctionName": "hezuo-dev-test",
+        "Handler": "test.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "hezuo",
+            "CLIENT_ID": "157101368513.159794061927",
+            "CLIENT_SECRET": "0f2f97078a2b830b78f1d7b2bce3bf42",
+            "INSTALL_SUCCESS_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/success.html",
+            "INSTALL_ERROR_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/error.html",
+            "NAMESPACE": "hezuo-dev",
+            "SLACK_TABLE": "hezuo-dev-slack-bot",
+            "VERIFICATION_TOKEN": "nE5UYmMCaQGEFnNnZZqMZXha",
+            "TEAMS_TABLE": "hezuo-dev-teams",
+            "MEMBERS_TABLE": "hezuo-dev-members",
+            "ACTIVITY_TABLE": "hezuo-dev-activity",
+            "CEU_TABLE": "hezuo-dev-ceu"
+          }
+        }
+      },
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "TestLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "TestLambdaFunction"
+        },
+        "CodeSha256": "LHWCGd4hbQNZmKfREM579+yfOis3wnBeZ4t2rW2TMYE="
+      }
+    },
+    "ListDashmembersLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/hezuo/dev/1492044997907-2017-04-13T00:56:37.907Z/hezuo.zip"
+        },
+        "FunctionName": "hezuo-dev-list-members",
+        "Handler": "commands/list-members.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "hezuo",
+            "CLIENT_ID": "157101368513.159794061927",
+            "CLIENT_SECRET": "0f2f97078a2b830b78f1d7b2bce3bf42",
+            "INSTALL_SUCCESS_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/success.html",
+            "INSTALL_ERROR_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/error.html",
+            "NAMESPACE": "hezuo-dev",
+            "SLACK_TABLE": "hezuo-dev-slack-bot",
+            "VERIFICATION_TOKEN": "nE5UYmMCaQGEFnNnZZqMZXha",
+            "TEAMS_TABLE": "hezuo-dev-teams",
+            "MEMBERS_TABLE": "hezuo-dev-members",
+            "ACTIVITY_TABLE": "hezuo-dev-activity",
+            "CEU_TABLE": "hezuo-dev-ceu"
+          }
+        }
+      },
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "ListDashmembersLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ListDashmembersLambdaFunction"
+        },
+        "CodeSha256": "LHWCGd4hbQNZmKfREM579+yfOis3wnBeZ4t2rW2TMYE="
+      }
+    },
+    "AddDashactivityLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/hezuo/dev/1492044997907-2017-04-13T00:56:37.907Z/hezuo.zip"
+        },
+        "FunctionName": "hezuo-dev-add-activity",
+        "Handler": "commands/add-activity.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "hezuo",
+            "CLIENT_ID": "157101368513.159794061927",
+            "CLIENT_SECRET": "0f2f97078a2b830b78f1d7b2bce3bf42",
+            "INSTALL_SUCCESS_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/success.html",
+            "INSTALL_ERROR_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/error.html",
+            "NAMESPACE": "hezuo-dev",
+            "SLACK_TABLE": "hezuo-dev-slack-bot",
+            "VERIFICATION_TOKEN": "nE5UYmMCaQGEFnNnZZqMZXha",
+            "TEAMS_TABLE": "hezuo-dev-teams",
+            "MEMBERS_TABLE": "hezuo-dev-members",
+            "ACTIVITY_TABLE": "hezuo-dev-activity",
+            "CEU_TABLE": "hezuo-dev-ceu"
+          }
+        }
+      },
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "AddDashactivityLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "AddDashactivityLambdaFunction"
+        },
+        "CodeSha256": "LHWCGd4hbQNZmKfREM579+yfOis3wnBeZ4t2rW2TMYE="
+      }
+    },
+    "ParserLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/hezuo/dev/1492044997907-2017-04-13T00:56:37.907Z/hezuo.zip"
+        },
+        "FunctionName": "hezuo-dev-parser",
+        "Handler": "parser.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "hezuo",
+            "CLIENT_ID": "157101368513.159794061927",
+            "CLIENT_SECRET": "0f2f97078a2b830b78f1d7b2bce3bf42",
+            "INSTALL_SUCCESS_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/success.html",
+            "INSTALL_ERROR_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/error.html",
+            "NAMESPACE": "hezuo-dev",
+            "SLACK_TABLE": "hezuo-dev-slack-bot",
+            "VERIFICATION_TOKEN": "nE5UYmMCaQGEFnNnZZqMZXha",
+            "TEAMS_TABLE": "hezuo-dev-teams",
+            "MEMBERS_TABLE": "hezuo-dev-members",
+            "ACTIVITY_TABLE": "hezuo-dev-activity",
+            "CEU_TABLE": "hezuo-dev-ceu"
+          }
+        }
+      },
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "ParserLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ParserLambdaFunction"
+        },
+        "CodeSha256": "LHWCGd4hbQNZmKfREM579+yfOis3wnBeZ4t2rW2TMYE="
+      }
+    },
+    "ActionsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/hezuo/dev/1492044997907-2017-04-13T00:56:37.907Z/hezuo.zip"
+        },
+        "FunctionName": "hezuo-dev-actions",
+        "Handler": "actions.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "hezuo",
+            "CLIENT_ID": "157101368513.159794061927",
+            "CLIENT_SECRET": "0f2f97078a2b830b78f1d7b2bce3bf42",
+            "INSTALL_SUCCESS_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/success.html",
+            "INSTALL_ERROR_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/error.html",
+            "NAMESPACE": "hezuo-dev",
+            "SLACK_TABLE": "hezuo-dev-slack-bot",
+            "VERIFICATION_TOKEN": "nE5UYmMCaQGEFnNnZZqMZXha",
+            "TEAMS_TABLE": "hezuo-dev-teams",
+            "MEMBERS_TABLE": "hezuo-dev-members",
+            "ACTIVITY_TABLE": "hezuo-dev-activity",
+            "CEU_TABLE": "hezuo-dev-ceu"
+          }
+        }
+      },
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "ActionsLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ActionsLambdaFunction"
+        },
+        "CodeSha256": "LHWCGd4hbQNZmKfREM579+yfOis3wnBeZ4t2rW2TMYE="
+      }
+    },
+    "EventsLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/hezuo/dev/1492044997907-2017-04-13T00:56:37.907Z/hezuo.zip"
+        },
+        "FunctionName": "hezuo-dev-events",
+        "Handler": "events.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "hezuo",
+            "CLIENT_ID": "157101368513.159794061927",
+            "CLIENT_SECRET": "0f2f97078a2b830b78f1d7b2bce3bf42",
+            "INSTALL_SUCCESS_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/success.html",
+            "INSTALL_ERROR_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/error.html",
+            "NAMESPACE": "hezuo-dev",
+            "SLACK_TABLE": "hezuo-dev-slack-bot",
+            "VERIFICATION_TOKEN": "nE5UYmMCaQGEFnNnZZqMZXha",
+            "TEAMS_TABLE": "hezuo-dev-teams",
+            "MEMBERS_TABLE": "hezuo-dev-members",
+            "ACTIVITY_TABLE": "hezuo-dev-activity",
+            "CEU_TABLE": "hezuo-dev-ceu"
+          }
+        }
+      },
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "EventsLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "EventsLambdaFunction"
+        },
+        "CodeSha256": "LHWCGd4hbQNZmKfREM579+yfOis3wnBeZ4t2rW2TMYE="
+      }
+    },
+    "InstallLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/hezuo/dev/1492044997907-2017-04-13T00:56:37.907Z/hezuo.zip"
+        },
+        "FunctionName": "hezuo-dev-install",
+        "Handler": "install.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "hezuo",
+            "CLIENT_ID": "157101368513.159794061927",
+            "CLIENT_SECRET": "0f2f97078a2b830b78f1d7b2bce3bf42",
+            "INSTALL_SUCCESS_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/success.html",
+            "INSTALL_ERROR_URL": "https://s3-ap-southeast-2.amazonaws.com/aws-davidiog-syd-hezuo/static/error.html",
+            "NAMESPACE": "hezuo-dev",
+            "SLACK_TABLE": "hezuo-dev-slack-bot",
+            "VERIFICATION_TOKEN": "nE5UYmMCaQGEFnNnZZqMZXha",
+            "TEAMS_TABLE": "hezuo-dev-teams",
+            "MEMBERS_TABLE": "hezuo-dev-members",
+            "ACTIVITY_TABLE": "hezuo-dev-activity",
+            "CEU_TABLE": "hezuo-dev-ceu"
+          }
+        }
+      },
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "InstallLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "InstallLambdaFunction"
+        },
+        "CodeSha256": "LHWCGd4hbQNZmKfREM579+yfOis3wnBeZ4t2rW2TMYE="
+      }
+    },
+    "ApiGatewayRestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "dev-hezuo"
+      }
+    },
+    "ApiGatewayResourceEvents": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "events",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceInstall": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "install",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodEventsPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceEvents"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "EventsLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayMethodInstallGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceInstall"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "InstallLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      }
+    },
+    "ApiGatewayDeployment1492044997919": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "StageName": "dev"
+      },
+      "DependsOn": [
+        "ApiGatewayMethodEventsPost",
+        "ApiGatewayMethodInstallGet"
+      ]
+    },
+    "EventsLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "EventsLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "InstallLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "InstallLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HezuoMembersDynamoDbTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "hezuo-dev-members",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "username",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "username",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
+      }
+    },
+    "HezuoTeamsDynamoDbTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "hezuo-dev-teams",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "team_name",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "username",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "team_name",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "username",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
+      }
+    },
+    "HezuoCEUDynamoDbTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "hezuo-dev-ceu",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "ceu_name",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "ceu_name",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
+      }
+    },
+    "HezuoActivityDynamoDbTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "hezuo-dev-activity",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "username",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "updated_at",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "username",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "updated_at",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
+      }
+    },
+    "SlackBotDynamoDbTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "hezuo-dev-slack-bot",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "team_id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "team_id",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      }
+    },
+    "TestLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "TestLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE"
+      }
+    },
+    "ListDashmembersLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ListDashmembersLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE"
+      }
+    },
+    "AddDashactivityLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "AddDashactivityLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE"
+      }
+    },
+    "ParserLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ParserLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE"
+      }
+    },
+    "ActionsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ActionsLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE"
+      }
+    },
+    "EventsLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "EventsLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE"
+      }
+    },
+    "InstallLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "InstallLambdaVersionLHWCGd4hbQNZmKfREM579yfOis3wnBeZ4t2rW2TMYE"
+      }
+    },
+    "ServiceEndpoint": {
+      "Description": "URL of the service endpoint",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "ApiGatewayRestApi"
+            },
+            ".execute-api.ap-southeast-2.amazonaws.com/dev"
+          ]
+        ]
+      }
+    }
+  }
+}

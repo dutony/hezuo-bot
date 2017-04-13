@@ -7,11 +7,6 @@ var rawCommand, command, response;
 
 const getCommand = text => /^<@[A-X0-9]*>(.+)/.exec(text)[1].trim();
 
-/*const aList = ['list', 'display', 'show', 'fetch'];
-const aAdd = ['add', 'create', 'include'];
-const aRemove = ['remove', 'delete', 'terminate'];
-const aMembers = ['member', 'members', 'user', 'users', 'person'] ;*/
-
 const parseListTeams = () => {
     
     //console.log('2 - command is ', command);
@@ -31,6 +26,58 @@ const parseListTeams = () => {
             resource: resource,
             api: 'list-members',
             params: [],
+            response: {
+                success: "$output",
+                error: "error to perform your command. Use list commands to see what I can do for ya.",
+            }
+        }
+    };
+};
+
+const parseAddActivity = () => {
+    
+    console.log('2 - command is ', command);
+
+    //Assure that this is the right command
+    const words = command.split(' ');
+    const action = words[0];
+    const resource = words[1];
+    var activityList = [];
+    var membersRaw = words[4];
+    const members = membersRaw.split(';');
+    const commentRaw = words.slice(5);
+    console.log(commentRaw);
+    const comment = commentRaw.join(' ');
+    console.log(comment === '');
+
+    if (action !== "add" || resource !== 'activity') {
+        throw new Error ('Bad implementation for command parseListTeams');
+    } else if (!words[2]) {
+        console.log('throw error for words 2');
+        throw new Error ('The command is not complete. A valid activity id is required');
+        console.log('after throw error for words 2');
+    } else if (words[3] !== 'to' || !words[3]) {
+        throw new Error ('Please add the keyword "to" between activity id and users');
+    }
+
+    for (var i = 2; i < words.length; i++) {
+        if (words[i] === 'to') break;
+        activityList.push(words[i]);
+    }
+
+    const activity = activityList.join(' ');
+
+    response = {
+        command: {
+            commandLine: command,
+            action: action,
+            resource: resource,
+            api: 'add-activity',
+            params: {
+                "activity": activity,
+                "members": members,
+                "comment": comment
+            },
             response: {
                 success: "$output",
                 error: "error to perform your command. Use list commands to see what I can do for ya.",
@@ -74,6 +121,17 @@ module.exports.handler = (event, context, callback) => {
                 .then(event = Object.assign(event, response))
                 .then((event) => callback(null, response))  //Success
                 .catch((err) =>  callback(sendResponse(null, err))); //Error
+        } else if (action === 'add' && resource === 'activity') {
+            console.log('calling add activity if statement');
+            Promise.resolve()
+                .then(parseAddActivity)
+                .then(event = Object.assign(event, response))
+                .then((event) => callback(null, response))  //Success
+                .catch((err) => {
+                    console.log('got into the catch, err is ', err);
+                    // callback(sendResponse(null, err));
+                    throw new Error (err);
+                }); //Error
         } else
         { 
             //Command not found
